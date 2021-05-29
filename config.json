@@ -1,0 +1,9 @@
+{
+  "cowin_host": "cdn-api.co-vin.in",
+  "pinInfo_host": "api.postalpincode.in",
+  "url_getAllStates": "/api/v2/admin/location/states",
+  "url_getDistByState": "/api/v2/admin/location/districts/{state_id}",
+  "url_calendarByPin": "/api/v2/appointment/sessions/public/calendarByPin?pincode={pincode}&date={date}",
+  "url_calendarByDist": "/api/v2/appointment/sessions/public/calendarByDistrict?district_id={district_id}&date={date}",
+  "url_getPinInfo": "/pincode/{pincode}"
+}
