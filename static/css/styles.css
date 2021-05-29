@@ -1,3 +1,8 @@
 .center-content {
     text-align: center !important;
 }
+
+.custom-spinner {
+    text-align: center !important;
+    top: 50%;
+}
