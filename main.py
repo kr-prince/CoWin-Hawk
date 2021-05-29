@@ -31,6 +31,19 @@ def index():
 			helped_users=73,
 			last_updated=lastUpdateTime('static/'))
 
+@app.route('/register')
+def register():
+	# Serve the initial landing page. This comes from flask
+	return render_template('register.html', 
+			last_updated=lastUpdateTime('static/'))
+
+
+@app.route('/details')
+def details():
+	# Serve the initial landing page. This comes from flask
+	return render_template('status.html', 
+			last_updated=lastUpdateTime('static/'))
+
 
 
 if __name__ == '__main__':
