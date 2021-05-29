@@ -1,35 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-	<form>
-        <div class="form-group">
-          <label for="exampleFormControlInput1">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+    <div id="formId">
+        <form method="POST" action=''>
+            <!-- Name -->
+            <div class="form-group">
+            <label for="exampleFormControlInput1">Name</label>
+            <input type="input" class="form-control" id="name" placeholder="Jhon Snow">
+            </div>
+
+            <!-- Phone Detials -->
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="number" class="form-control" id="phone" placeholder="9310XXXXXX"><span class="input-group-addon">Tel</span>
+            </div>
+
+            <!-- Select Pincode | District -->
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="radio-button" checked id="radio-pincode" value="pincode">
+                <label class="form-check-label" for="radio-pincode">Pincode</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="radio-button" id="radio-district" value="district">
+                <label class="form-check-label" for="radio-district">District</label>
+            </div>
+
+            <!-- Pincode Details -->
+            <div class="pincode-details">
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="number" class="form-control" id="pincode" placeholder="801XXX">
+                </div>
+            </div>
+
+            <!-- District Details -->
+            <div class="district-details">
+                <select class="state-select form-group" id="states">
+                    <option value="None" selected>Select States...</option>
+                </select>
+
+                <select class="district-select form-group" id="districts">
+                    <option value="None" selected>Select Districts...</option>
+                </select>
+            </div>
+            <br/>
+            <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- Spinner -->
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only"></span>
         </div>
-        <div class="form-group">
-          <label for="exampleFormControlSelect1">Example select</label>
-          <select class="form-control" id="exampleFormControlSelect1">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="exampleFormControlSelect2">Example multiple select</label>
-          <select multiple class="form-control" id="exampleFormControlSelect2">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="exampleFormControlTextarea1">Example textarea</label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
-      </form>
+    </div>
+
 </div>
 {% endblock %}

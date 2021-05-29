@@ -7,7 +7,7 @@ import utils
 from json import load
 from argparse import ArgumentParser
 from flask import Flask, render_template, jsonify, make_response, request
-from dbUtils import meta, addQuery
+from dbUtils import meta, addQuery, showDbData
 
 
 # initialize Flask
@@ -58,7 +58,8 @@ def register():
 			last_updated=lastUpdateTime('static/'))
 	else:
 		try:
-			addQuery(request.form)
+			requestData = request.get_json()
+			addQuery(requestData)
 		except Exception as ex:
 			return make_response(str(ex), 400)
 		else:
