@@ -1,14 +1,24 @@
+"""
+main module which starts the application
+"""
+
 import os
-import argparse
-from flask import Flask, render_template
+import utils
+from json import load
+from argparse import ArgumentParser
+from flask import Flask, render_template, jsonify, make_response
 
-# initialize Flask and SocketIO
+# initialize Flask
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secretKey4CoWinHawk!'
 
+# Custom Config
+cowin_config = dict()
 
 def parseCommandLineArgs():
-	# initialize parser for global config
-	parser = argparse.ArgumentParser() 
+	"""  initialize parser for global config
+	"""
+	parser = ArgumentParser() 
 	# adding arguments and defaults
 	parser.add_argument("-d", "--debug", help = "Debug mode", default=False)
 	parser.add_argument("-i", "--hostIp", help = "Host address", default='0.0.0.0')
@@ -17,7 +27,8 @@ def parseCommandLineArgs():
 	return args
 
 def lastUpdateTime(folder):
-	# This function returns the latest last updated timestamp of all the static files 
+	"""  returns the latest last updated timestamp of all the static files 
+	"""
 	return str(max(os.path.getmtime(os.path.join(root_path, file)) \
 		for root_path, dirs, files in os.walk(folder) \
 			for file in files))
@@ -25,27 +36,56 @@ def lastUpdateTime(folder):
 
 @app.route('/')
 def index():
-	# Serve the initial landing page. This comes from flask
+	"""  Serve the initial landing page. This comes from flask
+	"""
 	return render_template('dashboard.html', 
 			total_users=100, 
 			helped_users=73,
 			last_updated=lastUpdateTime('static/'))
 
+
 @app.route('/register')
 def register():
-	# Serve the initial landing page. This comes from flask
+	"""  This will register a new user in the app
+	"""
 	return render_template('register.html', 
 			last_updated=lastUpdateTime('static/'))
 
 
 @app.route('/details')
 def details():
-	# Serve the initial landing page. This comes from flask
+	""" This will return the details of all registered users
+	"""
 	return render_template('status.html', 
 			last_updated=lastUpdateTime('static/'))
 
 
+@app.route('/api/states', methods = ['GET'])
+def getStates():
+	"""  Returns the list of states as list of {"state_id" : "state_name"}
+	"""
+	data, status = utils.custom_request(cowin_config['cowin_host'], cowin_config['url_getAllStates'])
+	if data is not None and 'states' in data:
+	    return jsonify(data['states'])
+	else:
+		return make_response(status, 400)
+
+
+@app.route('/api/districts/<int:state_id>', methods = ['GET'])
+def getDistricts(state_id = None):
+	"""  Returns the list of Districts for the State Id as list of {"district_id" : "district_name"}
+	"""
+	data, status = utils.custom_request(cowin_config['cowin_host'], 
+							cowin_config['url_getDistByState'],
+							urlParams = {'state_id':state_id} )
+	if data is not None and 'districts' in data:
+	    return jsonify(data['districts'])
+	else:
+		return make_response(status, 400)
+	    
+
 
 if __name__ == '__main__':
 	args = parseCommandLineArgs()
+	cowin_config.update(utils.read_jsonFile('./config.json'))
 	app.run(host=args.hostIp, debug=args.debug)
