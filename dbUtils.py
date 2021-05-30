@@ -18,7 +18,7 @@ userQuery = Table(
 	Column('contact', String(10), nullable=False),
 	Column('pincodeDistrict', String(50)),
 	Column('status', String(15), default='Accepted'),
-	Column('message_text', Text, default=''),
+	Column('message_text', Text, default='Accepted for monitoring'),
 	Column('timestamp', DateTime, default=func.now()),
 
 	# Constraints
@@ -42,4 +42,11 @@ def showDbData():
 	return result
 
 
-
+def getAllQuery():
+	""" This will get all the records in the userQuery table
+	"""
+	conn = engine.connect()
+	sel = userQuery.select()
+	conn = engine.connect()
+	rows = conn.execute(sel).fetchall()
+	return rows

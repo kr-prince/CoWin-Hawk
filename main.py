@@ -4,10 +4,10 @@ main module which starts the application
 
 import os
 import utils
-from json import load
+from json import load, dumps
 from argparse import ArgumentParser
 from flask import Flask, render_template, jsonify, make_response, request
-from dbUtils import meta, addQuery, showDbData
+from dbUtils import meta, addQuery, getAllQuery
 
 
 # initialize Flask
@@ -71,8 +71,9 @@ def register():
 def details():
 	""" This will return the details of all registered users
 	"""
-	return render_template('status.html', 
-			last_updated=lastUpdateTime('static/'))
+	results = getAllQuery()
+	return render_template('status.html', details = getAllQuery(),
+			numrows = len(results), last_updated=lastUpdateTime('static/'))
 
 
 @app.route('/api/getpininfo/<int:pincode>', methods = ['GET'])
@@ -118,4 +119,5 @@ if __name__ == '__main__':
 	args = parseCommandLineArgs()
 	cowin_config.update(utils.read_jsonFile('./config.json'))
 	meta.create_all()
+	# addQuery({'name':'Bunny', 'contact':'9831289189', 'pincodeDistrict':'841406'})
 	app.run(host=args.hostIp, debug=args.debug)

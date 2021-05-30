@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    
     // notification classes
     const notificationClasses = {
         "success" : "alert-success",
@@ -103,4 +104,10 @@ $(document).ready(function(){
         } 
     }
 
+    $('[data-toggle="popover"]').popover({
+    	trigger: 'focus'
+    }); 
+    $('.popover-dismiss').popover({
+    	trigger: 'focus'
+    });
 });
