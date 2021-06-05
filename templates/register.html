@@ -1,19 +1,28 @@
 {% extends "base.html" %}
+
+{% block navigation %}
+<li class="nav-item"><a href="/" class="nav-link" aria-current="page">Dashboard</a></li>
+<li class="nav-item"><a href="/register" class="nav-link active">Register</a></li>
+<li class="nav-item"><a href="/details" class="nav-link">Details</a></li>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div id="formId">
         <form method="POST" action=''>
             <!-- Name -->
             <div class="form-group">
-            <label for="exampleFormControlInput1">Name</label>
-            <input type="input" class="form-control" id="name" placeholder="Jhon Snow">
+                <label for="name">Name</label>
+                <input type="input" class="form-control" id="name" placeholder="John Snow">
             </div>
+            <br/>
 
             <!-- Phone Detials -->
             <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="number" class="form-control" id="phone" placeholder="9310XXXXXX"><span class="input-group-addon">Tel</span>
+                <label for="phone">Contact</label>
+                <input type="number" class="form-control" id="phone" placeholder="9XXXXXX310">
             </div>
+            <br/>
 
             <!-- Select Pincode | District -->
             <div class="form-check form-check-inline">
@@ -24,6 +33,7 @@
                 <input class="form-check-input" type="radio" name="radio-button" id="radio-district" value="district">
                 <label class="form-check-label" for="radio-district">District</label>
             </div>
+            <br/><br/>
 
             <!-- Pincode Details -->
             <div class="pincode-details">
@@ -34,17 +44,26 @@
             </div>
 
             <!-- District Details -->
-            <div class="district-details">
-                <select class="state-select form-group" id="states">
-                    <option value="None" selected>Select States...</option>
-                </select>
+            <div class="district-details form-row-inline" style="display: flex;">
+                <div class="form-group col-md-5">
+                    <label for="states">State</label>
+                    <select class="state-select form-select" id="states">
+                        <option value="None" selected>Select State</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-1"></div>
 
-                <select class="district-select form-group" id="districts">
-                    <option value="None" selected>Select Districts...</option>
-                </select>
+                <div class="form-group col-md-5">
+                    <label for="districts">District</label>
+                    <select class="district-select form-select" id="districts">
+                        <option value="None" selected>Select District</option>
+                    </select>
+                </div>
             </div>
             <br/>
+
             <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
+
         </form>
     </div>
 

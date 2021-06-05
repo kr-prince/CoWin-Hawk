@@ -1,16 +1,26 @@
 {% extends "base.html" %}
+{% block navigation %}
+<li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Dashboard</a></li>
+<li class="nav-item"><a href="/register" class="nav-link">Register</a></li>
+<li class="nav-item"><a href="/details" class="nav-link">Details</a></li>
+{% endblock %}
+
 {% block content %}
 <div class="row">
 	<div class="center-content">
-		<h1> {{ total_users }} </h1>
-		Registered Users
+		<p>
+			<h1 class="bigger-h1"> {{ total_users }} </h1>
+			Registered Users
+		</p>
 	</div>
 </div>
 
 <div class="row">
 	<div class="center-content">
-		<h1> {{ helped_users }} </h1>
-		Helped Users
+		<p>
+			<h1 class="bigger-h1" style="color:blue;"> {{ helped_users }} </h1>
+			Helped Users
+		</p>
 	</div>
 </div>
 {% endblock %}

@@ -8,8 +8,6 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
     <title>CoWin Hawk</title>
-	<link type="text/css" rel="stylesheet" href="/static/css/vendor/bootstrap.css?u={{ last_updated }}">
-	<link type="text/css" rel="stylesheet" href="/static/css/styles.css?u={{ last_updated }}">
 </head>
 
 <body>
@@ -21,9 +19,8 @@
 	      	</a>
 
 	      	<ul class="nav nav-pills">
-		        <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Dashboard</a></li>
-		        <li class="nav-item"><a href="/register" class="nav-link">Register</a></li>
-		        <li class="nav-item"><a href="/details" class="nav-link">Details</a></li>
+	      		{% block navigation %}
+    			{% endblock %}
 	      	</ul>
 	    </header>
   	</div>
@@ -32,13 +29,6 @@
   	<div class="container">
 		<!-- Notification Bar -->
 			<div class="notification-container">
-				<div class="alert alert-dismissible fade show" role="alert">
-					<div id="notification-content">
-						<!-- placeholder to add message -->
-					</div>
-					<button type="button" class="btn-close close" data-dismiss="alert" aria-label="Close">
-					</button>
-				</div>
 			</div>	
 
 		<!-- Other pages goes here ... -->
@@ -49,17 +39,19 @@
 
 	<footer class="page-footer fixed-bottom font-small blue ">
 		<!-- Copyright -->
-	  	<div class="footer-copyright text-center py-3">© Designed By Prince & Ritesh from <a href="#">Team Hawk</a>
+	  	<div class="footer-copyright text-center py-3">
+	  		© Designed By Prince & Ritesh from <e>Team Hawk</e>
 	  	</div>
 
 	</footer>
 	
+	<script type="text/javascript" src="/static/js/vendor/bootstrap.bundle.min.js?u={{ last_updated }}"></script>
+	<script type="text/javascript" src="/static/js/vendor/jquery-3.6.0.min.js?u={{ last_updated }}"></script>
 	<script type="text/javascript" src="/static/js/services.js?u={{ last_updated }}" defer></script>
 	<script type="text/javascript" src="/static/js/validation.js?u={{ last_updated }}" defer></script>
 	<script type="text/javascript" src="/static/js/app.js?u={{ last_updated }}" defer></script>
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="/static/js/vendor/bootstrap.min.js?u={{ last_updated }}"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/vendor/bootstrap.min.css?u={{ last_updated }}">
+	<link type="text/css" rel="stylesheet" href="/static/css/styles.css?u={{ last_updated }}">
 </body>
 
 </html>

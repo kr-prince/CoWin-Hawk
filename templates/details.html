@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block navigation %}
+<li class="nav-item"><a href="/" class="nav-link" aria-current="page">Dashboard</a></li>
+<li class="nav-item"><a href="/register" class="nav-link">Register</a></li>
+<li class="nav-item"><a href="/details" class="nav-link active">Details</a></li>
+{% endblock %}
+
 {% block content %}
 
 {% if numrows > 0 %}
@@ -23,9 +29,9 @@
         <th scope="row"> {{ i+1 }} </th>
         <td> {{ details[i][1] }} </td>
         <td> {{ details[i][2][0]+'XXXXXX'+details[i][2][7:] }} </td>
-        <td> {{ details[i][3] }} </td>
+        <td> {{ details[i][3] if details[i][3]|length >= 6 else details[i][4]}} </td>
         <td> 
-          <button type="button"  class='{{"btn btn-sm btn-success" if details[i][4]=="Notified" else "btn btn-sm btn-light"}}'  data-toggle="popover" data-placement="right" title="{{ details[i][6].strftime('%d-%m-%Y') }}" data-bs-content="{{ details[i][5] }}">{{ details[i][4] }}</button>
+          <button type="button"  class='{{"btn btn-sm btn-success" if details[i][5]=="Notified" else "btn btn-sm btn-light"}}'  data-toggle="popover" data-placement="right" title="{{ details[i][7].strftime('%d-%m-%Y %I:%M %p') }}" data-bs-content="{{ details[i][6] }}">{{ details[i][5] }}</button>
         </td>
       </tr>
 
