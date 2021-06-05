@@ -4,10 +4,13 @@ main module which starts the application
 
 import os
 import utils
-from json import load
+import time
+from json import load, dumps
+from threading import Thread
 from argparse import ArgumentParser
 from flask import Flask, render_template, jsonify, make_response, request
-from dbUtils import meta, addQuery, showDbData
+from dbUtils import meta, addQuery, getAllQuery, setMonitoringQuerys, getQuerysByStatus
+from utils import start_hawk
 
 
 # initialize Flask
@@ -26,6 +29,7 @@ def parseCommandLineArgs():
 	# adding arguments and defaults
 	parser.add_argument("-d", "--debug", help = "Debug mode", default=False)
 	parser.add_argument("-i", "--hostIp", help = "Host address", default='0.0.0.0')
+	parser.add_argument("-key", "--fast2sms", help="Api Key for fast2sms", default='sOmeFa15eKeY!')
 	# Read arguments from command line and return
 	args = parser.parse_args()
 	return args
@@ -44,8 +48,8 @@ def index():
 	"""  Serve the initial landing page. This comes from flask
 	"""
 	return render_template('dashboard.html', 
-			total_users=100, 
-			helped_users=73,
+			total_users=len(getAllQuery()), 
+			helped_users=len(getQuerysByStatus('Notified')),
 			last_updated=lastUpdateTime('static/'))
 
 
@@ -59,20 +63,22 @@ def register():
 	else:
 		try:
 			requestData = request.get_json()
+			# print(requestData)
 			addQuery(requestData)
 		except Exception as ex:
-			return make_response(str(ex), 400)
+			return make_response(jsonify({"message": str(ex)}), 400)
 		else:
-			make_response("Request Accepted", 200)
-
+			return make_response(jsonify({"message": "Request Accepted"}), 200)
 
 
 @app.route('/details')
 def details():
 	""" This will return the details of all registered users
 	"""
-	return render_template('status.html', 
-			last_updated=lastUpdateTime('static/'))
+	results = getAllQuery()
+	# print(results)
+	return render_template('details.html', details = results,
+			numrows = len(results), last_updated=lastUpdateTime('static/'))
 
 
 @app.route('/api/getpininfo/<int:pincode>', methods = ['GET'])
@@ -89,7 +95,7 @@ def getPinInfo(pincode = None):
 		else:
 			return jsonify({'district' : 'NA', 'state' : 'NA'})
 	else:
-		return make_response(status, 400)
+		return make_response(jsonify({"message": status}), 400)
 
 
 @app.route('/api/states', methods = ['GET'])
@@ -100,7 +106,7 @@ def getStates():
 	if data is not None and 'states' in data:
 		return jsonify(data['states'])
 	else:
-		return make_response(status, 400)
+		return make_response(jsonify({"message": status}), 400)
 
 
 @app.route('/api/districts/<int:state_id>', methods = ['GET'])
@@ -111,11 +117,16 @@ def getDistricts(state_id = None):
 	if data is not None and 'districts' in data:
 		return jsonify(data['districts'])
 	else:
-		return make_response(status, 400)
-		
+		return make_response(jsonify({"message": status}), 400)
+
 
 if __name__ == '__main__':
 	args = parseCommandLineArgs()
 	cowin_config.update(utils.read_jsonFile('./config.json'))
+	cowin_config.update({'fast2sms_key' : args.fast2sms})
 	meta.create_all()
+	# addQuery({'name':'Bunny', 'contact':'9831289189', 'pincodeDistrict':'841406'})
+	cw_thread = Thread(target=start_hawk, args=(cowin_config,), name="Hawk-Thread")
+	cw_thread.setDaemon(True)
+	cw_thread.start()
 	app.run(host=args.hostIp, debug=args.debug)

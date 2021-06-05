@@ -14,12 +14,11 @@ async function populateDistricts(state_id) {
 
 async function sendPostReq(reqUrl, data, config) {
     const result = await fetch('/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json());
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response => response.json());
     return result;
 }
