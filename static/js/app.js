@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    
+
     // notification classes
     const notificationClasses = {
         "success" : "alert-success",
@@ -40,21 +40,22 @@ $(document).ready(function(){
             // fetch all the data from api and populate states dropdown
             var allStates = await populateStates();
             allStates.map(state => {
-                let newOption = $('<option>');
-                newOption.attr('value',state.state_id).text(state.state_name);
-                $('#states').append(newOption)
+                let newOption = $('<option></option>');
+                newOption.val(state.state_id).text(state.state_name);
+                $('#states').append(newOption);
             });
         });
 
         // onChange Event of Dropdown
-        $("select.state-select  ").change(async function(){
+        $("select.state-select").change(async function(){
             var selectedStateId = $(this).children("option:selected").val();
             if(selectedStateId !== "None") {
+                $('#districts').empty();
                 var allDistricts = await populateDistricts(selectedStateId);
                 allDistricts.map(district => {
-                    let newOption = $('<option>');
-                    newOption.attr('value',district.district_id).text(district.district_name);
-                    $('#districts').append(newOption)
+                    let newOption = $('<option></option>');
+                    newOption.val(district.district_id).text(district.district_name);
+                    $('#districts').append(newOption);
                 });
             }
         });
@@ -73,18 +74,20 @@ $(document).ready(function(){
         let data = {};
         data.name = $('#name').val();
         data.contact = $('#phone').val();
+
         if($('#radio-district').prop('checked')) {
-            data.state_id = $('.state-select:selected').val();
-            data.district_id = $('.district-select:selected').val();
+            // Send District Id and Name
+            data.pincodeDistrictId = $('#districts').val();
+            data.districtName = $('#districts option:selected').text();
         } else {
-            data.pincode = $('#pincode').val();
+            // Only Pincode
+            data.pincodeDistrictId = $('#pincode').val();
         }
         return data;    
     }
     
     // Submit Handler
     function submitDetails() {
-        $('#formId').hide();
         $('.spinner-border').show();
         let data = makeData();
         let retVal = validateData(data);
@@ -92,16 +95,24 @@ $(document).ready(function(){
             setTimeout(async ()=>{
                 $('#formId').show();
                 const result = await sendPostReq('reqres.in',data);
-                console.log(result);
                 $('.spinner-border').hide();
-            },5000);
+                custom_notify("success", result.message);
+            },1000);
         } else {
             $('.spinner-border').hide();
-            // add danger class to this
-            $('.alert-dismissible').addClass(notificationClasses.danger);
-            $('#notification-content').append(`${retVal.msg}`);
-            $('.notification-container').show();
+            custom_notify("danger", retVal.message);
         } 
+    }
+
+    function custom_notify(severity, message) {
+        // console.log(severity, message);
+        $('.notification-container').html("");
+        $('.notification-container').html('<div class="alert alert-dismissible fade show" role="alert"> \
+           <div id="notification-content"> '+message+' </div>\
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\
+           </div>');
+        $('.alert-dismissible').addClass(notificationClasses[severity]);
+        $('.notification-container').show();
     }
 
     $('[data-toggle="popover"]').popover({
@@ -110,4 +121,5 @@ $(document).ready(function(){
     $('.popover-dismiss').popover({
     	trigger: 'focus'
     });
+
 });
