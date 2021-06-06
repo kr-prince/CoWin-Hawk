@@ -3,6 +3,7 @@ module containing the utility functions for common use
 """
 
 import json
+import sys
 import time
 import http.client
 from datetime import datetime
@@ -11,7 +12,7 @@ from dbUtils import setMonitoringQuerys, getQuerysByStatus, setNotifiedQuerys
 
 # we need to create a default browser agent in case fake-agent fails
 fallback_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
-uagent = UserAgent(fallback=fallback_agent)
+uagent = UserAgent(fallback=fallback_agent, cache=False, use_cache_server=False)
 
 
 def custom_request(host, url, method='GET', urlParams=None, payload=None, headers=None):
@@ -25,7 +26,7 @@ def custom_request(host, url, method='GET', urlParams=None, payload=None, header
         headers = {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache',
-            'User-Agent': uagent.random 
+            'User-Agent': uagent.random
         }
     else:
         headers['User-Agent'] = uagent.random
@@ -36,6 +37,9 @@ def custom_request(host, url, method='GET', urlParams=None, payload=None, header
     if urlParams is not None:
     	url = url.format(**urlParams)
     
+    print("host, url, urlParams", host, url, urlParams)
+    sys.stdout.flush()
+    
     try:
         conn = http.client.HTTPSConnection(host)
         conn.request(method, url=url, headers=headers, body=body)
@@ -43,6 +47,8 @@ def custom_request(host, url, method='GET', urlParams=None, payload=None, header
         assert (resp.status == 200)
         data = json.loads(resp.read(), encoding='utf-8')
     except Exception as ex:
+        print(ex)
+        sys.stdout.flush()
         data = None
     finally:
         status = resp.reason
@@ -86,6 +92,8 @@ def send_sms(message, phone, fast2sms_key):
 
 
 def start_hawk(cowin_config):
+    print("coming this side of the code ....")
+    sys.stdout.flush()
     start_hour = 0
     while True:
         # Get todays date and start time
