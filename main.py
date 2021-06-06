@@ -123,7 +123,7 @@ def getDistricts(state_id = None):
 if __name__ == '__main__':
 	args = parseCommandLineArgs()
 	cowin_config.update(utils.read_jsonFile('./config.json'))
-	cowin_config.update({'fast2sms_key' : args.fast2sms})
+	# cowin_config.update({'fast2sms_key' : args.fast2sms})
 	meta.create_all()
 	# addQuery({'name':'Bunny', 'contact':'9831289189', 'pincodeDistrict':'841406'})
 	cw_thread = Thread(target=start_hawk, args=(cowin_config,), name="Hawk-Thread")

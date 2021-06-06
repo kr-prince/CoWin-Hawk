@@ -5,5 +5,7 @@
   "url_getDistByState": "/api/v2/admin/location/districts/{state_id}",
   "url_calendarByPin": "/api/v2/appointment/sessions/public/calendarByPin?pincode={pincode}&date={date}",
   "url_calendarByDist": "/api/v2/appointment/sessions/public/calendarByDistrict?district_id={district_id}&date={date}",
-  "url_getPinInfo": "/pincode/{pincode}"
+  "url_getPinInfo": "/pincode/{pincode}",
+  "fast2sms_key": "aJjWhP1i3g2c8V5YIUXxACSKlRrGy9dszZ4pnvQfDH7MuBbL6ojy9vAKdwiNng4qPmZC5HkRLBuVYQOE"
+
 }
