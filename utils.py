@@ -37,8 +37,8 @@ def custom_request(host, url, method='GET', urlParams=None, payload=None, header
     if urlParams is not None:
     	url = url.format(**urlParams)
     
-    print("host, url, urlParams", host, url, urlParams)
-    sys.stdout.flush()
+    # print("host, url, urlParams", host, url, urlParams)
+    # sys.stdout.flush()
     
     try:
         conn = http.client.HTTPSConnection(host)
@@ -47,8 +47,8 @@ def custom_request(host, url, method='GET', urlParams=None, payload=None, header
         assert (resp.status == 200)
         data = json.loads(resp.read(), encoding='utf-8')
     except Exception as ex:
-        print(ex)
-        sys.stdout.flush()
+        # print(ex)
+        # sys.stdout.flush()
         data = None
     finally:
         status = resp.reason
@@ -92,8 +92,6 @@ def send_sms(message, phone, fast2sms_key):
 
 
 def start_hawk(cowin_config):
-    print("coming this side of the code ....")
-    sys.stdout.flush()
     start_hour = 0
     while True:
         # Get todays date and start time

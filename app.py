@@ -33,7 +33,6 @@ def parseCommandLineArgs():
 	# adding arguments and defaults
 	parser.add_argument("-d", "--debug", help = "Debug mode", default=False)
 	parser.add_argument("-i", "--hostIp", help = "Host address", default='0.0.0.0')
-	parser.add_argument("-key", "--fast2sms", help="Api Key for fast2sms", default='sOmeFa15eKeY!')
 	# Read arguments from command line and return
 	args = parser.parse_args()
 	return args
@@ -48,7 +47,6 @@ def lastUpdateTime(folder):
 
 def setup():
 	cowin_config.update(utils.read_jsonFile('./config.json'))
-	# cowin_config.update({'fast2sms_key' :'aJjWhP1i3g2c8V5YIUXxACSKlRrGy9dszZ4pnvQfDH7MuBbL6ojy9vAKdwiNng4qPmZC5HkRLBuVYQOE'})
 	meta.create_all()
 	cw_thread = Thread(target=start_hawk, args=(cowin_config,), name="Hawk-Thread")
 	cw_thread.setDaemon(True)
@@ -83,7 +81,6 @@ def register():
 	else:
 		try:
 			requestData = request.get_json()
-			# print(requestData)
 			addQuery(requestData)
 		except Exception as ex:
 			return make_response(jsonify({"message": str(ex)}), 400)
@@ -100,7 +97,6 @@ def details():
 		setup()
 		intialSetupFlag = True
 	results = getAllQuery()
-	# print(results)
 	return render_template('details.html', details = results,
 			numrows = len(results), last_updated=lastUpdateTime('static/'))
 
@@ -134,8 +130,8 @@ def getStates():
 	if not intialSetupFlag:
 		setup()
 		intialSetupFlag = True
-	print(os.path.join(os.getcwd(),'config.json'), os.listdir(), cowin_config)
-	sys.stdout.flush()
+	# print(os.path.join(os.getcwd(),'config.json'), os.listdir(), cowin_config)
+	# sys.stdout.flush()
 	data, status = utils.custom_request(cowin_config['cowin_host'], cowin_config['url_getAllStates'])
 	if data is not None and 'states' in data:
 		return jsonify(data['states'])
@@ -160,11 +156,5 @@ def getDistricts(state_id = None):
 
 if __name__ == '__main__':
 	# args = parseCommandLineArgs()
-	# cowin_config.update(utils.read_jsonFile('./config.json'))
-	# cowin_config.update({'fast2sms_key' :'aJjWhP1i3g2c8V5YIUXxACSKlRrGy9dszZ4pnvQfDH7MuBbL6ojy9vAKdwiNng4qPmZC5HkRLBuVYQOE'})
-	# meta.create_all()
-	# cw_thread = Thread(target=start_hawk, args=(cowin_config,), name="Hawk-Thread")
-	# cw_thread.setDaemon(True)
-	# cw_thread.start()
-	# app.run(host=args.hostIp, debug=True)
+	# app.run(host=args.hostIp, debug=args.debug)
 	app.run(debug=True)

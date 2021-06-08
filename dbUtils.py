@@ -8,7 +8,6 @@ from sqlalchemy import Table, Column, Integer, String, Text, DateTime, MetaData,
 
 engine = create_engine('sqlite:///CoWinQuery.db')
 meta = MetaData(engine)
-# conn = None
 
 
 userQuery = Table(
