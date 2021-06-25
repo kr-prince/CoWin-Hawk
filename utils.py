@@ -1,7 +1,7 @@
 """
 module containing the utility functions for common use
 """
-
+from collections import defaultdict
 import json
 import sys
 import time
@@ -9,10 +9,11 @@ import http.client
 from datetime import datetime
 from fake_useragent import UserAgent
 from dbUtils import setMonitoringQuerys, getQuerysByStatus, setNotifiedQuerys
+from log import writeLog
 
 # we need to create a default browser agent in case fake-agent fails
 fallback_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
-uagent = UserAgent(fallback=fallback_agent, cache=False, use_cache_server=False)
+uagent = UserAgent(fallback=fallback_agent, cache=False)
 
 
 def custom_request(host, url, method='GET', urlParams=None, payload=None, headers=None):
@@ -90,6 +91,13 @@ def send_sms(message, phone, fast2sms_key):
     else:
         return status
 
+def createStatusDict():
+    """ This will return dictionary containing {'pincodeDistId':[(id1,contact1,distName1),(id2,contact2,distName2)], 'pincodeDistId':[(id,contact)]}
+    """
+    result = defaultdict(list)
+    for query in getQuerysByStatus('Monitoring'):
+        result[query[3]].append((query[0],query[2],query[4]))
+    return result
 
 def start_hawk(cowin_config):
     start_hour = 0
@@ -101,39 +109,39 @@ def start_hawk(cowin_config):
         # First convert all the newly 'Accepted' to 'Monitoring'
         setMonitoringQuerys()
 
+        # get the status dictionary 
+        currentStatusDict = createStatusDict()
+
         # Get all the queries having status 'Monitoring'
-        for query in getQuerysByStatus('Monitoring'):
-            phone, pindistId, distName = query[2], query[3], None
-            data = None
-            if query[4]=='NA' and len(pindistId)>=6:
-                # Query is by Pincode
-                distName = query[3]
+        for pindistId,userInfo in currentStatusDict.items():
+            if len(pindistId)>=6:
                 data, status = custom_request(cowin_config['cowin_host'],
                         cowin_config['url_calendarByPin'].format(pincode=pindistId, date=from_date))
             else:
-                # Query is by District Id
-                distName = query[4]
                 data, status = custom_request(cowin_config['cowin_host'],
                         cowin_config['url_calendarByDist'].format(district_id=pindistId, date=from_date))
-
             if data is not None:
                 for center in data['centers']:
                     for session in center['sessions']:
                         if session['available_capacity'] > 0:
-                            # we found a slot.! Lets inform user
-                            sms_body = text_template.format(date=session.get('date',''), 
-                                        min_age=session.get('min_age_limit','NA'),
-                                        dose1=session.get('available_capacity_dose1','NA'),
-                                        dose2=session.get('available_capacity_dose2','NA'),
-                                        vaccine=session.get('vaccine','NA'), center_name=center.get('name', 'NA'), 
-                                        center_address=center.get('address', 'NA'),
-                                        district_name=center.get('district_name', 'NA'))
+                            for id,contact,distName in userInfo:
+                                # we found a slot.! Lets inform user
+                                sms_body = text_template.format(date=session.get('date',''), 
+                                            min_age=session.get('min_age_limit','NA'),
+                                            dose1=session.get('available_capacity_dose1','NA'),
+                                            dose2=session.get('available_capacity_dose2','NA'),
+                                            vaccine=session.get('vaccine','NA'), center_name=center.get('name', 'NA'), 
+                                            center_address=center.get('address', 'NA'),
+                                            district_name=center.get('district_name', 'NA'))
 
-                            sms_status = send_sms(sms_body, phone, cowin_config['fast2sms_key'])
-                            setNotifiedQuerys(query[0], sms_body+'  - SMS: '+sms_status)
-                            print("({0},{1}) Notified. SMS Status : {2}".format(phone, distName, sms_status))
+                                sms_status = send_sms(sms_body, contact, cowin_config['fast2sms_key'])
+                            # update the table
+                            setNotifiedQuerys(id, sms_body+'  - SMS: '+sms_status)
+                            # log the success msg
+                            writeLog("({0},{1}) Notified. SMS Status : {2}".format(contact, distName, sms_status),"INFO")
             else:
-                print("({0},{1})   Error: {2}".format(phone, distName, status))
+                # log the error
+                writeLog("({0} {1})   Error: {2}".format(pindistId,distName, status),"ERROR")
 
         seconds = (datetime.now() - start_time).seconds
         # We pause for 5 seconds before re-searching, or less if we are taking more time to process a batch
@@ -142,5 +150,6 @@ def start_hawk(cowin_config):
         if start_hour >= 1800:
             # We print the monitor live after around 30 mins
             print("CoWin-Hawk monitor live..")
-            start_hour -= start_hour
+            # reset start_hour
+            start_hour = 0
         
